@@ -7,4 +7,5 @@ interface UserService {
     fun changePassword(id: String, password: String)
     fun findIdByEmail(email: String): String?
     fun isIdAlreadyExist(id: String): Boolean
+    fun findById(id: String): User?
 }

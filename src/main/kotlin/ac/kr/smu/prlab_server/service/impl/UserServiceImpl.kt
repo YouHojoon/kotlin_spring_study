@@ -24,6 +24,10 @@ class UserServiceImpl(private val repo: UserRepository): UserService {
     }
 
     override fun isIdAlreadyExist(id: String): Boolean {
-        return repo.findById(id).getOrNull() == null
+        return findById(id) == null
+    }
+
+    override fun findById(id: String): User? {
+        return repo.findById(id).getOrNull()
     }
 }

@@ -16,12 +16,12 @@ import javax.crypto.spec.SecretKeySpec
 
 @Component
 class JWTTokenProvider(
-    @Value("\${jwt.secret.key}")
+    @Value("\${jwt.secretKey}")
     private val secretKey: String,
     private val userDetailsService: UserDetailsService
 ) {
     private val parser: JwtParser by lazy {
-        Jwts.parserBuilder().setSigningKey(key).build()
+        Jwts.parserBuilder().setSigningKey(secretKey.toByteArray()).build()
     }
     private val key:Key
         get(){
@@ -43,13 +43,13 @@ class JWTTokenProvider(
     }
 
     fun getAuthentication(token: String): Authentication{
-        val userDetail = userDetailsService.loadUserByUsername(token)
+        val userDetail = userDetailsService.loadUserByUsername(getId(token))
         return UsernamePasswordAuthenticationToken(userDetail,"")
     }
     fun getId(token: String): String{
         return parser.parseClaimsJws(token).body.subject
     }
-    fun resolveToken(request: HttpServletRequest): String{
+    fun resolveToken(request: HttpServletRequest): String?{
         return request.getHeader(HEADER_KEY)
     }
     fun validateToken(token: String): Boolean{
