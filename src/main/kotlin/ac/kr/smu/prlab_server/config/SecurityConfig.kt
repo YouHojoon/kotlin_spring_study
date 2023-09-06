@@ -12,6 +12,8 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.util.matcher.RegexRequestMatcher
+import org.springframework.security.web.util.matcher.RequestMatcher
 
 
 @Configuration
@@ -24,11 +26,12 @@ class SecurityConfig(private val tokenProvider: JWTTokenProvider) {
             sessionManagement {
                 sessionCreationPolicy = SessionCreationPolicy.STATELESS
             }
+
             authorizeRequests {
                 authorize("/login",permitAll)
                 authorize(HttpMethod.POST, "/users",permitAll)// 회원가입
-                authorize("/users?id**",permitAll)// id 중복 확인, password 찾기
-                authorize("/users?email**",permitAll) // id 찾기
+                authorize(RequestMatcher { request -> request.requestURI == "/users" && request.getParameter("id") != null}, permitAll)
+                authorize(RequestMatcher { request -> request.requestURI == "/users" && request.getParameter("email") != null}, permitAll)
                 authorize(anyRequest, authenticated)
             }
             addFilterBefore<UsernamePasswordAuthenticationFilter>(JWTAuthenticationFilter(tokenProvider))

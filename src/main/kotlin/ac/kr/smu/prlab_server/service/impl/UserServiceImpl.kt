@@ -20,7 +20,7 @@ class UserServiceImpl(private val repo: UserRepository): UserService {
     }
 
     override fun findIdByEmail(email: String): String? {
-        return repo.findByEmail(email).getOrNull()?.let { email }
+        return repo.findByEmail(email).getOrNull()?.let { it.id }
     }
 
     override fun isIdAlreadyExist(id: String): Boolean {
