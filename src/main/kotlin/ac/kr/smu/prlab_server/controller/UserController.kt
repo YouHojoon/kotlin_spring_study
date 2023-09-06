@@ -27,10 +27,18 @@ class UserController(private val service: UserService) {
         }
     }
 
-    @GetMapping
-    fun getUserByEmail(@RequestParam email: String): ResponseEntity<Any>{
+    @GetMapping(params = ["email"])
+    fun getUserByEmail(@RequestParam("email") email: String): ResponseEntity<Any>{
         val id = service.findIdByEmail(email) ?: return ResponseEntity.notFound().build()
 
         return ResponseEntity.ok(mapOf("id" to id))
+    }
+
+    @GetMapping(params = ["id"])
+    fun getIsIdExistById(@RequestParam("id") id: String): ResponseEntity<Void>{
+        if (service.isIdExist(id))
+            return ResponseEntity.noContent().build()
+        else
+            return ResponseEntity.notFound().build()
     }
 }
