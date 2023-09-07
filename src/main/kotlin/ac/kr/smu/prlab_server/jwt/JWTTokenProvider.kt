@@ -33,12 +33,12 @@ class JWTTokenProvider(
         private const val HEADER_KEY = "AUTH-TOKEN"
     }
 
-    fun createToken(id: String): String{
+    fun createToken(id: String, validTime: Long = TOKEN_VALID_MILISECOND): String{
         val now = Date()
         val claims =  Jwts.claims().setSubject(id)
         return Jwts
             .builder().setClaims(claims)
-            .setIssuedAt(now).setExpiration(Date(now.time + TOKEN_VALID_MILISECOND))
+            .setIssuedAt(now).setExpiration(Date(now.time + validTime))
             .signWith(key).compact()
     }
 

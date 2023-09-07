@@ -51,7 +51,7 @@ class UserController(private val service: UserService, private val tokenProvider
         when {
             user == null -> return ResponseEntity.notFound().build()
             email != user.email -> return ResponseEntity(HttpStatus.CONFLICT)
-            else -> return ResponseEntity.ok(mapOf("token" to tokenProvider.createToken(id)))
+            else -> return ResponseEntity.ok(mapOf("token" to tokenProvider.createToken(id, 1000L * 5)))
         }
     }
 }
