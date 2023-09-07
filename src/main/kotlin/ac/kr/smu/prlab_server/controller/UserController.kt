@@ -19,28 +19,31 @@ import org.springframework.web.bind.annotation.RestController
 class UserController(private val service: UserService, private val tokenProvider: JWTTokenProvider) {
     @PostMapping
     fun postUser(@RequestBody user: User): ResponseEntity<Void>{
-        if (service.findIdByEmail(user.email) != null){
-            return ResponseEntity(HttpStatus.CONFLICT)
-        }
-        else{
-            service.save(user)
-            return ResponseEntity(HttpStatus.CREATED)
+        val email = service.findIdByEmail(user.email)
+        when{
+            email == null -> {
+                service.save(user)
+                return ResponseEntity(HttpStatus.CREATED)
+            }
+            else -> return ResponseEntity(HttpStatus.CONFLICT)
         }
     }
 
     @GetMapping(params = ["email"])
     fun getUserByEmail(@RequestParam("email") email: String): ResponseEntity<Any>{
-        val id = service.findIdByEmail(email) ?: return ResponseEntity.notFound().build()
-
-        return ResponseEntity.ok(mapOf("id" to id))
+        val id = service.findIdByEmail(email)
+        when{
+            id == null -> return ResponseEntity.notFound().build()
+            else -> return ResponseEntity.ok(mapOf("id" to id))
+        }
     }
 
     @GetMapping(params = ["id"])
     fun getIsIdExistById(@RequestParam("id") id: String): ResponseEntity<Void>{
-        if (service.isIdExist(id))
-            return ResponseEntity.noContent().build()
-        else
-            return ResponseEntity.notFound().build()
+        when{
+            service.isIdExist(id) ->  return ResponseEntity.noContent().build()
+            else -> return ResponseEntity.notFound().build()
+        }
     }
     @GetMapping(params = ["id","email"])
     fun getIsMatchIdAndEmail(@RequestParam("id") id: String, @RequestParam("email") email: String): ResponseEntity<Any>{
