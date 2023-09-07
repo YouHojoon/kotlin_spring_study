@@ -1,6 +1,7 @@
 package ac.kr.smu.prlab_server.controller
 
 import ac.kr.smu.prlab_server.domain.User
+import ac.kr.smu.prlab_server.jwt.JWTTokenProvider
 import ac.kr.smu.prlab_server.service.UserService
 import org.apache.coyote.Response
 import org.springframework.http.HttpStatus
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RequestMapping("/users")
 @RestController
-class UserController(private val service: UserService) {
+class UserController(private val service: UserService, private val tokenProvider: JWTTokenProvider) {
     @PostMapping
     fun postUser(@RequestBody user: User): ResponseEntity<Void>{
         if (service.findIdByEmail(user.email) != null){
@@ -40,5 +41,14 @@ class UserController(private val service: UserService) {
             return ResponseEntity.noContent().build()
         else
             return ResponseEntity.notFound().build()
+    }
+    @GetMapping(params = ["id","email"])
+    fun getIsMatchIdAndEmail(@RequestParam("id") id: String, @RequestParam("email") email: String): ResponseEntity<Any>{
+        val user =  service.findById(id)
+        when {
+            user == null -> return ResponseEntity.notFound().build()
+            email != user.email -> return ResponseEntity(HttpStatus.CONFLICT)
+            else -> return ResponseEntity.ok(mapOf("token" to tokenProvider.createToken(id)))
+        }
     }
 }
