@@ -1,5 +1,8 @@
 package ac.kr.smu.prlab_server.jwt
 
+import ac.kr.smu.prlab_server.service.UserService
+import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.JwtParser
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -18,10 +21,10 @@ import javax.crypto.spec.SecretKeySpec
 class JWTTokenProvider(
     @Value("\${jwt.secretKey}")
     private val secretKey: String,
-    private val userDetailsService: UserDetailsService
+    private val userService: UserService
 ) {
     private val parser: JwtParser by lazy {
-        Jwts.parserBuilder().setSigningKey(secretKey.toByteArray()).build()
+        Jwts.parserBuilder().setSigningKey(key).build()
     }
     private val key:Key
         get(){
@@ -33,18 +36,19 @@ class JWTTokenProvider(
         private const val HEADER_KEY = "AUTH-TOKEN"
     }
 
-    fun createToken(id: String): String{
+    fun createToken(id: String, validTime: Long = TOKEN_VALID_MILISECOND): String{
         val now = Date()
         val claims =  Jwts.claims().setSubject(id)
         return Jwts
             .builder().setClaims(claims)
-            .setIssuedAt(now).setExpiration(Date(now.time + TOKEN_VALID_MILISECOND))
+            .setIssuedAt(now).setExpiration(Date(now.time + validTime))
             .signWith(key).compact()
     }
 
     fun getAuthentication(token: String): Authentication{
-        val userDetail = userDetailsService.loadUserByUsername(getId(token))
-        return UsernamePasswordAuthenticationToken(userDetail,"")
+        val user = userService.findById(getId(token))
+
+        return UsernamePasswordAuthenticationToken(user!!,null,user!!.authorities)
     }
     fun getId(token: String): String{
         return parser.parseClaimsJws(token).body.subject
@@ -53,6 +57,12 @@ class JWTTokenProvider(
         return request.getHeader(HEADER_KEY)
     }
     fun validateToken(token: String): Boolean{
-        return parser.parseClaimsJws(token).body.expiration.after(Date())
+        try{
+            parser.parseClaimsJws(token)
+        }catch (e: ExpiredJwtException){
+            return false
+        }
+
+        return true
     }
 }
