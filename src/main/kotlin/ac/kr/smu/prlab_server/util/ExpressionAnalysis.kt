@@ -1,7 +1,6 @@
 package ac.kr.smu.prlab_server.util
 
-class ExpressionAnalysis(
+data class ExpressionAnalysis(
     val valence: Float,
     val arousal: Float
-) {
-}
+)
