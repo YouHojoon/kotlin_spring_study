@@ -6,11 +6,12 @@ import java.sql.Timestamp
 
 @Entity
 @PrimaryKeyJoinColumn(name="id")
+@DiscriminatorValue("FACE")
 class FaceMeasurementData(
     bpm: Int,
     SpO2: Int,
     RR: Int,
-    stressIndex: Int,
+    stress: Int,
     measurementDate: Timestamp,
     confidence:Float,
 
@@ -25,6 +26,6 @@ class FaceMeasurementData(
 
     @Column(updatable = false, nullable = false)
     val expression: String
-): MeasurementData(bpm,SpO2,RR,stressIndex,measurementDate, confidence) {
+): MeasurementData(bpm,SpO2,RR,stress,measurementDate, confidence, MeasurementTarget.FACE) {
 
 }

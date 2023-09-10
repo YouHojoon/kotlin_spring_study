@@ -1,6 +1,7 @@
 package ac.kr.smu.prlab_server.domain
 
 import ac.kr.smu.prlab_server.annotation.AllOpen
+import ac.kr.smu.prlab_server.enum.MeasurementTarget
 
 import jakarta.persistence.*
 import java.sql.Timestamp
@@ -20,13 +21,17 @@ abstract class MeasurementData(
     val RR: Int,
 
     @Column(updatable = false, nullable = false)
-    val stressIndex: Int,
+    val stress: Int,
 
     @Column(updatable = false, nullable = false)
     val measurementDate: Timestamp,
 
     @Column(updatable = false, nullable = false)
     val confidence: Float,
+
+    @Column(insertable = false,updatable = false, nullable = false)
+    @Enumerated(EnumType.STRING)
+    val target: MeasurementTarget,
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
