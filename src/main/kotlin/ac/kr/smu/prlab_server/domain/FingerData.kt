@@ -13,16 +13,17 @@ class FingerData(
     SpO2: Int,
     RR: Int,
     stressIndex: Int,
-    date: Timestamp,
+    measurementDate: Timestamp,
+    confidence: Float,
 
-    @Column
+    @Column(updatable = false, nullable = false)
     val SYS: Int,
 
-    @Column
+    @Column(updatable = false, nullable = false)
     val DIA: Int,
 
-    @Column
+    @Column(updatable = false, nullable = false)
     val bloodSugar: Int
-): MeasurementData(bpm,SpO2,RR,stressIndex, date){
+): MeasurementData(bpm,SpO2,RR,stressIndex, measurementDate, confidence){
 
 }

@@ -11,19 +11,20 @@ class FaceMeasurementData(
     SpO2: Int,
     RR: Int,
     stressIndex: Int,
-    date: Timestamp,
+    measurementDate: Timestamp,
+    confidence:Float,
 
-    @Column
+    @Column(updatable = false, nullable = false)
     val BMI : Int,
 
-    @Column
+    @Column(updatable = false, nullable = false)
     val arousal: Float,
 
-    @Column
+    @Column(updatable = false, nullable = false)
     val valence: Float,
 
-    @Column
+    @Column(updatable = false, nullable = false)
     val expression: String
-): MeasurementData(bpm,SpO2,RR,stressIndex,date) {
+): MeasurementData(bpm,SpO2,RR,stressIndex,measurementDate, confidence) {
 
 }

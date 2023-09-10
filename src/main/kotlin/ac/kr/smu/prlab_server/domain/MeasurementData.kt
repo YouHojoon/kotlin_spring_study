@@ -10,20 +10,23 @@ import java.sql.Timestamp
 @DiscriminatorColumn(name = "target")
 @AllOpen
 abstract class MeasurementData(
-    @Column
+    @Column(updatable = false, nullable = false)
     val bpm: Int,
 
-    @Column
+    @Column(updatable = false, nullable = false)
     val SpO2: Int,
 
-    @Column
+    @Column(updatable = false, nullable = false)
     val RR: Int,
 
-    @Column
+    @Column(updatable = false, nullable = false)
     val stressIndex: Int,
 
-    @Column
-    val date: Timestamp,
+    @Column(updatable = false, nullable = false)
+    val measurementDate: Timestamp,
+
+    @Column(updatable = false, nullable = false)
+    val confidence: Float,
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
