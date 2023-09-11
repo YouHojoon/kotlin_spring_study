@@ -31,6 +31,6 @@ class MeasurementController(private val service: MeasurementDataService) {
     @DeleteMapping("{id}")
     fun deleteMeasurementData(@PathVariable id: Long): ResponseEntity<Void>{
         service.deleteById(id)
-        return ResponseEntity.noContent().build()   
+        return ResponseEntity.noContent().build()
     }
 }

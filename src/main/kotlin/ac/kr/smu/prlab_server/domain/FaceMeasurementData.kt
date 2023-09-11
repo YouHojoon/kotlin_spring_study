@@ -1,5 +1,6 @@
 package ac.kr.smu.prlab_server.domain
 
+import ac.kr.smu.prlab_server.enum.Expression
 import ac.kr.smu.prlab_server.enum.MeasurementTarget
 import jakarta.persistence.*
 import java.sql.Timestamp
@@ -25,7 +26,8 @@ class FaceMeasurementData(
     val valence: Float,
 
     @Column(updatable = false, nullable = false)
-    val expression: String
+    @Enumerated(EnumType.STRING)
+    val expression: Expression
 ): MeasurementData(bpm,SpO2,RR,stress,measurementDate, confidence, MeasurementTarget.FACE) {
 
 }
