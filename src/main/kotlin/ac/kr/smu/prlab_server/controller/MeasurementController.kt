@@ -7,6 +7,7 @@ import ac.kr.smu.prlab_server.repository.MeasurementDataRepository
 import ac.kr.smu.prlab_server.service.MeasurementDataService
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -26,5 +27,10 @@ class MeasurementController(private val service: MeasurementDataService) {
     fun getMeasurementData(@PathVariable id: Long): ResponseEntity<Any>{
         val data = service.findById(id) ?:  return ResponseEntity.notFound().build()
         return ResponseEntity.ok(data)
+    }
+    @DeleteMapping("{id}")
+    fun deleteMeasurementData(@PathVariable id: Long): ResponseEntity<Void>{
+        service.deleteById(id)
+        return ResponseEntity.noContent().build()   
     }
 }

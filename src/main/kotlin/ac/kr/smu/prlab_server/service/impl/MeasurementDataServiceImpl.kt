@@ -42,4 +42,8 @@ class MeasurementDataServiceImpl(
     override fun findById(id: Long): MeasurementData? {
         return repo.findById(id).getOrNull()
     }
+
+    override fun deleteById(id: Long) {
+        repo.deleteById(id)
+    }
 }
