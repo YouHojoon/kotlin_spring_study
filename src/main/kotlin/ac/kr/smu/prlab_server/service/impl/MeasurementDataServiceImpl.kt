@@ -2,12 +2,14 @@ package ac.kr.smu.prlab_server.service.impl
 
 import ac.kr.smu.prlab_server.domain.FaceMeasurementData
 import ac.kr.smu.prlab_server.domain.FingerMeasurementData
+import ac.kr.smu.prlab_server.domain.MeasurementData
 import ac.kr.smu.prlab_server.enum.MeasurementTarget
 import ac.kr.smu.prlab_server.repository.MeasurementDataRepository
 import ac.kr.smu.prlab_server.service.MeasurementDataService
 import ac.kr.smu.prlab_server.util.RecentData
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 class MeasurementDataServiceImpl(
@@ -35,5 +37,9 @@ class MeasurementDataServiceImpl(
                 return RecentData(faceData,fingerData)
             }
         }
+    }
+
+    override fun findById(id: Long): MeasurementData? {
+        return repo.findById(id).getOrNull()
     }
 }
