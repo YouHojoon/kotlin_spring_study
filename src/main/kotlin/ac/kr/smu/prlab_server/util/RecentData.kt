@@ -50,7 +50,7 @@ class RecentData {
     }
 
     constructor(faceData: FaceMeasurementData, fingerData: FingerMeasurementData){
-        if (faceData.measurementDate.after(fingerData.measurementDate)){
+        if (faceData.measurementDate.isAfter(fingerData.measurementDate)){
             bpm = faceData.bpm
             SpO2 = faceData.SpO2
             RR = faceData.RR

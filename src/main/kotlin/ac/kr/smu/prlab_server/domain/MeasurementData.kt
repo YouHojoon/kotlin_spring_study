@@ -5,6 +5,7 @@ import ac.kr.smu.prlab_server.enum.MeasurementTarget
 
 import jakarta.persistence.*
 import java.sql.Timestamp
+import java.time.LocalDateTime
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -24,7 +25,7 @@ abstract class MeasurementData(
     val stress: Int,
 
     @Column(updatable = false, nullable = false)
-    val measurementDate: Timestamp,
+    val measurementDate: LocalDateTime,
 
     @Column(updatable = false, nullable = false)
     val confidence: Float,

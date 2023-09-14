@@ -4,6 +4,7 @@ import ac.kr.smu.prlab_server.enum.Expression
 import ac.kr.smu.prlab_server.enum.MeasurementTarget
 import jakarta.persistence.*
 import java.sql.Timestamp
+import java.time.LocalDateTime
 
 @Entity
 @PrimaryKeyJoinColumn(name="id")
@@ -13,7 +14,7 @@ class FaceMeasurementData(
     SpO2: Int,
     RR: Int,
     stress: Int,
-    measurementDate: Timestamp,
+    measurementDate: LocalDateTime,
     confidence:Float,
 
     @Column(updatable = false, nullable = false)

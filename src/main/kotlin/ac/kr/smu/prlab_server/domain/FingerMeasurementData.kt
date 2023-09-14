@@ -6,6 +6,7 @@ import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
 import jakarta.persistence.PrimaryKeyJoinColumn
 import java.sql.Timestamp
+import java.time.LocalDateTime
 
 @Entity
 @PrimaryKeyJoinColumn(name="id")
@@ -15,7 +16,7 @@ class FingerMeasurementData(
     SpO2: Int,
     RR: Int,
     stress: Int,
-    measurementDate: Timestamp,
+    measurementDate: LocalDateTime,
     confidence: Float,
 
     @Column(updatable = false, nullable = false)

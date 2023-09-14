@@ -3,12 +3,22 @@ package ac.kr.smu.prlab_server.service.impl
 import ac.kr.smu.prlab_server.domain.FaceMeasurementData
 import ac.kr.smu.prlab_server.domain.FingerMeasurementData
 import ac.kr.smu.prlab_server.domain.MeasurementData
+import ac.kr.smu.prlab_server.enum.Expression
 import ac.kr.smu.prlab_server.enum.MeasurementTarget
+import ac.kr.smu.prlab_server.enum.Metric
+import ac.kr.smu.prlab_server.enum.Period
 import ac.kr.smu.prlab_server.repository.MeasurementDataRepository
 import ac.kr.smu.prlab_server.service.MeasurementDataService
-import ac.kr.smu.prlab_server.util.RecentData
+import ac.kr.smu.prlab_server.util.*
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
+import java.sql.Timestamp
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
+import java.time.temporal.WeekFields
+import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 @Service
@@ -45,5 +55,83 @@ class MeasurementDataServiceImpl(
 
     override fun deleteById(id: Long) {
         repo.deleteById(id)
+    }
+
+    override fun findMetricDatasByPeriodAndDate(metric: Metric, period: Period, date: Date): List<MetricData> {
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+        val localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+        val startDateTime = when(period){
+            Period.WEEK -> LocalDateTime.of(localDate.minusDays(7), LocalTime.of(0,0,0))
+            Period.MONTH -> LocalDateTime.of(localDate.minusMonths(1), LocalTime.of(0,0,0))
+            Period.YEAR -> LocalDateTime.of(localDate.minusYears(1), LocalTime.of(0,0,0))
+        }
+        val endDateTime = LocalDateTime.of(localDate, LocalTime.of(23,59,59))
+
+        return repo
+            .findAllByMeasurementDateBetween(startDateTime, endDateTime)
+            .groupBy {
+                when(period){
+                    Period.WEEK -> it.measurementDate.dayOfWeek.value
+                    Period.MONTH -> ChronoUnit.DAYS.between(endDateTime, it.measurementDate) / 7
+                    Period.YEAR -> it.measurementDate.month.value
+                }
+            }
+            .map { it.value }
+            .mapNotNull {
+                mapMeasurementDatasToMetricDataValueType(metric, it)
+            }
+    }
+
+
+    private fun mapMeasurementDatasToMetricDataValueType(metric: Metric, datas: List<MeasurementData>): MetricData{
+        val date = datas.maxOf { it.measurementDate }.toLocalDate()
+        return when(metric){
+            Metric.BPM -> {
+                val bpms = datas.map { it.bpm }
+
+                MetricData(MinMaxData(bpms.min(), bpms.max()),date)
+            }
+            Metric.SpO2 -> {
+                val SpO2s = datas.map { it.SpO2 }
+
+                MetricData(MinMaxData(SpO2s.min(), SpO2s.max()),date)
+            }
+            Metric.RR -> {
+                val RRs = datas.map { it.RR }
+                MetricData(MinMaxData(RRs.min(), RRs.max()),date)
+            }
+            Metric.STRESS -> {
+                val stresses = datas.map { it.stress }
+
+                MetricData(MinMaxData(stresses.min(), stresses.max()),date)
+            }
+            Metric.BMI -> {
+                val BMIs = datas.mapNotNull {(it as? FaceMeasurementData)?.BMI}
+
+                MetricData(MinMaxData(BMIs.min(), BMIs.max()),date)
+            }
+            Metric.EXPRESSION_ANALYSIS -> {
+                val faceMeasurementDatas = datas.mapNotNull { it as? FaceMeasurementData }
+
+                MetricData(
+                    ExpressionAnalysisMetricDataValueType(MinMaxData(faceMeasurementDatas.minOf { it.valence }, faceMeasurementDatas.maxOf { it.valence })
+                        , MinMaxData(faceMeasurementDatas.minOf { it.arousal}, faceMeasurementDatas.maxOf { it.arousal })), date
+                )
+
+            }
+            Metric.BLOOD_PRESSURE -> {
+                val fingerMeasurementDatas = datas
+                    .mapNotNull { it as? FingerMeasurementData }
+               MetricData( BloodPressureMetricDataValueType(MinMaxData(fingerMeasurementDatas.minOf { it.SYS }, fingerMeasurementDatas.maxOf { it.SYS })
+                   , MinMaxData(fingerMeasurementDatas.minOf { it.DIA }, fingerMeasurementDatas.maxOf { it.DIA })
+               ), date)
+            }
+            Metric.BLOOD_SUGAR -> {
+                val bloodSugars = datas.mapNotNull {it as? FingerMeasurementData}.map { it.bloodSugar }
+
+                MetricData(MinMaxData(bloodSugars.min(), bloodSugars.max()), date)
+            }
+        }
     }
 }
