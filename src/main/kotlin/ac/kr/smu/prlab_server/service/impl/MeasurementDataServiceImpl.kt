@@ -19,6 +19,7 @@ import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 import java.time.temporal.WeekFields
 import java.util.*
+import kotlin.collections.HashMap
 import kotlin.jvm.optionals.getOrNull
 
 @Service
@@ -113,12 +114,29 @@ class MeasurementDataServiceImpl(
             }
             Metric.EXPRESSION_ANALYSIS -> {
                 val faceMeasurementDatas = datas.mapNotNull { it as? FaceMeasurementData }
+                val map = HashMap<Expression,Int>()
+                var minValence = 0f
+                var maxValence = 0f
+                var minArousal = 0f
+                var maxArousal = 0f
+
+                faceMeasurementDatas.forEach {
+                    if(minValence == 0f || minValence > it.valence)
+                        minValence = it.valence
+                    if(maxValence == 0f || maxValence < it.valence)
+                        maxValence = it.valence
+                    if(minArousal == 0f || minArousal > it.arousal)
+                        minArousal = it.arousal
+                    if (maxArousal == 0f || maxArousal < it.arousal)
+                        maxArousal = it.arousal
+
+                    map[it.expression] = map[it.expression] ?: 0 + 1
+                }
 
                 MetricData(
-                    ExpressionAnalysisMetricDataValueType(MinMaxData(faceMeasurementDatas.minOf { it.valence }, faceMeasurementDatas.maxOf { it.valence })
-                        , MinMaxData(faceMeasurementDatas.minOf { it.arousal}, faceMeasurementDatas.maxOf { it.arousal })), date
+                    ExpressionAnalysisMetricDataValueType(MinMaxData(minValence, maxArousal), MinMaxData(minArousal,maxArousal)
+                        ,ExpressionMetricData(map)), date
                 )
-
             }
             Metric.BLOOD_PRESSURE -> {
                 val fingerMeasurementDatas = datas
