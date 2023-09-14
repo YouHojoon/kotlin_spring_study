@@ -141,9 +141,23 @@ class MeasurementDataServiceImpl(
             Metric.BLOOD_PRESSURE -> {
                 val fingerMeasurementDatas = datas
                     .mapNotNull { it as? FingerMeasurementData }
-               MetricData( BloodPressureMetricDataValueType(MinMaxData(fingerMeasurementDatas.minOf { it.SYS }, fingerMeasurementDatas.maxOf { it.SYS })
-                   , MinMaxData(fingerMeasurementDatas.minOf { it.DIA }, fingerMeasurementDatas.maxOf { it.DIA })
-               ), date)
+                var minSYS= 0
+                var maxSYS = 0
+                var minDIA = 0
+                var maxDIA = 0
+
+                fingerMeasurementDatas.forEach {
+                    if(minSYS == 0 || minSYS > it.SYS)
+                        minSYS = it.SYS
+                    if(maxSYS == 0 || maxSYS < it.SYS)
+                        maxSYS = it.SYS
+                    if(minDIA == 0 || minDIA > it.DIA)
+                        minDIA = it.DIA
+                    if (maxDIA == 0 || maxDIA < it.DIA)
+                        maxDIA = it.DIA
+                }
+
+                MetricData( BloodPressureMetricDataValueType(MinMaxData(minSYS, maxSYS), MinMaxData(minDIA, maxDIA)), date)
             }
             Metric.BLOOD_SUGAR -> {
                 val bloodSugars = datas.mapNotNull {it as? FingerMeasurementData}.map { it.bloodSugar }
