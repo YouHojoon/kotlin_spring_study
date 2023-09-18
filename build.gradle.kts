@@ -36,6 +36,10 @@ dependencies {
 
 }
 
+allOpen{
+    annotation("ac.kr.smu.prlab_server.annotation.AllOpen")
+}
+
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs += "-Xjsr305=strict"
