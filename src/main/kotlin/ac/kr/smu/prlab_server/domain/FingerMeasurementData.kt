@@ -18,7 +18,7 @@ class FingerMeasurementData(
     stress: Int,
     measurementDate: LocalDateTime,
     confidence: Float,
-
+    user: User,
     @Column(updatable = false, nullable = false)
     val SYS: Int,
 
@@ -27,6 +27,6 @@ class FingerMeasurementData(
 
     @Column(updatable = false, nullable = false)
     val bloodSugar: Int
-): MeasurementData(bpm,SpO2,RR,stress, measurementDate, confidence, MeasurementTarget.FINGER){
+): MeasurementData(bpm,SpO2,RR,stress, measurementDate, confidence, MeasurementTarget.FINGER,user){
 
 }

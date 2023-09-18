@@ -42,30 +42,4 @@ class MeasurementController(private val service: MeasurementDataService, private
         service.deleteById(id)
         return ResponseEntity.noContent().build()
     }
-    @GetMapping("test")
-    fun test(){
-        repo.save(FingerMeasurementData(
-            75,
-            99,
-            10,
-            100,
-            LocalDateTime.of(LocalDate.of(2023, 9,1), LocalTime.of(12,2,25)),
-            1f,
-            125,
-            73,
-            88
-        ))
-
-        repo.save(FingerMeasurementData(
-            153,
-            97,
-            13,
-            88,
-            LocalDateTime.now(),
-            1f,
-            117,
-            86,
-            73
-        ))
-    }
 }

@@ -16,6 +16,7 @@ class FaceMeasurementData(
     stress: Int,
     measurementDate: LocalDateTime,
     confidence:Float,
+    user: User,
 
     @Column(updatable = false, nullable = false)
     val BMI : Int,
@@ -29,6 +30,6 @@ class FaceMeasurementData(
     @Column(updatable = false, nullable = false)
     @Enumerated(EnumType.STRING)
     val expression: Expression
-): MeasurementData(bpm,SpO2,RR,stress,measurementDate, confidence, MeasurementTarget.FACE) {
+): MeasurementData(bpm,SpO2,RR,stress,measurementDate, confidence, MeasurementTarget.FACE,user) {
 
 }

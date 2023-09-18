@@ -34,6 +34,11 @@ abstract class MeasurementData(
     @Enumerated(EnumType.STRING)
     val target: MeasurementTarget,
 
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private val user: User,
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private val id: Long = 0L
