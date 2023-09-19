@@ -32,11 +32,10 @@ class JWTTokenProvider(
                 , SignatureAlgorithm.HS256.jcaName)
         }
     companion object{
-        private const val TOKEN_VALID_MILISECOND = 1000L * 60 * 60 // 1시간
         private const val HEADER_KEY = "AUTH-TOKEN"
     }
 
-    fun createToken(id: String, validTime: Long = TOKEN_VALID_MILISECOND): String{
+    fun createToken(id: String, validTime: Long = 1000L * 60 * 60): String{
         val now = Date()
         val claims =  Jwts.claims().setSubject(id)
         return Jwts
