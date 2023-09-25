@@ -9,7 +9,7 @@ data class OAuthTokenResponse(
     val accessToken: String,
     val idToken: String,
     val expiresIn : Int,
-    val refreshToken: String,
-    val refreshTokenExpiresIn: Int,
+    val refreshToken: String?,
+    val refreshTokenExpiresIn: Int?,
     val scope: String
 )

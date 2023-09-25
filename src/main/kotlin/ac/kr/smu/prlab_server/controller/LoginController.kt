@@ -5,8 +5,6 @@ import ac.kr.smu.prlab_server.service.OAuthService
 import ac.kr.smu.prlab_server.service.UserService
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import org.apache.coyote.Response
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
