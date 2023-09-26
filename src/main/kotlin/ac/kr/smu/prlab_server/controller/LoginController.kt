@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-
+import org.springframework.web.reactive.function.client.WebClientResponseException
 
 
 @RestController
@@ -43,15 +43,20 @@ class LoginController(
     suspend fun postSNSLogin(@RequestBody body: HashMap<String, String>, @PathVariable SNS: String): ResponseEntity<Any>{
         val code = body["code"] ?: return ResponseEntity.badRequest().build()
 
-        val tokenResponse = GlobalScope.async {
-            OAuthService.oauth(SNS,code)
-        }.await()
+        val tokenResponseResult = OAuthService.oauth(SNS,code)
 
-        if(userService.findById(tokenResponse.idToken) == null)
-            return ResponseEntity.notFound().build()
-
-        val token = tokenProvider.createToken(tokenResponse.idToken)
-        return ResponseEntity.ok().header("AUTH-TOKEN", token).build()
-
+        return tokenResponseResult
+            .fold(onSuccess = {
+                if (userService.findById(it.idToken) == null)
+                    ResponseEntity.notFound().build<Any>()
+                ResponseEntity.ok().header("AUTH-TOKEN",tokenProvider.createToken(it.idToken)).build<Any>()
+            }){
+                when(it){
+                    is WebClientResponseException -> {
+                        ResponseEntity<Any>(it.getResponseBodyAs(Map::class.java), it.statusCode)
+                    }
+                    else -> ResponseEntity.internalServerError().build<Any>()
+                }
+            }
     }
 }
