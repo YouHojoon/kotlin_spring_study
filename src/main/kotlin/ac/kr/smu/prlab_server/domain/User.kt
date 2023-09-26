@@ -13,10 +13,10 @@ import java.util.Date
 class User(
     @Id val id: String,
     @Column(name = "password") var _password: String,
-    @Column val email: String,
-    @Column val birthday: Date,
-    @Enumerated(EnumType.STRING) @Column val gender: Gender,
-    @Enumerated(EnumType.STRING) @Column val type: UserType
+    @Column(updatable = false) val email: String,
+    @Column(updatable = false) val birthday: Date,
+    @Enumerated(EnumType.STRING) @Column(updatable = false) val gender: Gender,
+    @Enumerated(EnumType.STRING) @Column(updatable = false) val type: UserType
 ): UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return AuthorityUtils.createAuthorityList()
