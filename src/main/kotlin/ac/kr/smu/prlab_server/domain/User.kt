@@ -2,6 +2,7 @@ package ac.kr.smu.prlab_server.domain
 
 import ac.kr.smu.prlab_server.enum.Gender
 import ac.kr.smu.prlab_server.enum.UserType
+import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.persistence.*
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.AuthorityUtils
@@ -11,19 +12,21 @@ import java.util.Date
 
 @Entity
 class User(
-    @Id val id: String,
-    @Column(name = "password") var _password: String,
+    @Column(length = 900, updatable = false) val id: String = "default",
+    @Column @JvmField var password: String = "default",
     @Column(updatable = false) val email: String,
     @Column(updatable = false) val birthday: Date,
     @Enumerated(EnumType.STRING) @Column(updatable = false) val gender: Gender,
-    @Enumerated(EnumType.STRING) @Column(updatable = false) val type: UserType
+    @Enumerated(EnumType.STRING) @Column(updatable = false) val type: UserType,
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) val uid: Long = 0
 ): UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return AuthorityUtils.createAuthorityList()
     }
 
+
     override fun getPassword(): String {
-        return _password
+        return password
     }
 
     override fun getUsername(): String {
@@ -44,8 +47,5 @@ class User(
 
     override fun isEnabled(): Boolean {
         return true
-    }
-    fun setPassword(password: String){
-        _password = password
     }
 }
