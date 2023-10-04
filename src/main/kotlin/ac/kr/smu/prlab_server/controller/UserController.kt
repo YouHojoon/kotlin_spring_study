@@ -44,7 +44,7 @@ class UserController(
             return saveSNSUser(user, code.toString())
     }
 
-    fun saveUser(user: User): ResponseEntity<Any> {
+    private fun saveUser(user: User): ResponseEntity<Any> {
         val email = service.findIdByEmail(user.email)
 
         when {
@@ -57,7 +57,7 @@ class UserController(
         }
     }
 
-    fun saveSNSUser(user: User, code: String): ResponseEntity<Any> {
+    private  fun saveSNSUser(user: User, code: String): ResponseEntity<Any> {
         val oauthResult = OAuthService.oauth(user.type.name.lowercase(), code)
 
         return oauthResult.fold({
