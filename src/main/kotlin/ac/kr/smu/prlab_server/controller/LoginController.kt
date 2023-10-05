@@ -7,6 +7,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.PathVariable
 
 import org.springframework.web.bind.annotation.PostMapping
@@ -21,7 +22,8 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 class LoginController(
     private val userService: UserService,
     private val OAuthService: OAuthService,
-    private val tokenProvider: JWTTokenProvider) {
+    private val tokenProvider: JWTTokenProvider,
+    private val passwordEncoder: PasswordEncoder) {
     @PostMapping
     fun postLogin(@RequestBody body: HashMap<String, String>): ResponseEntity<Void>{
         val id = body["id"]
@@ -31,8 +33,8 @@ class LoginController(
             return ResponseEntity.badRequest().build()
 
         val user = userService.findById(id) ?: return  ResponseEntity.notFound().build()
-
-        if (password == user.password) {
+        
+        if (passwordEncoder.matches(password, user.password)) {
             val token = tokenProvider.createToken(id)
             return ResponseEntity.ok().header("AUTH-TOKEN", token).build()
         } else
