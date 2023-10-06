@@ -166,7 +166,7 @@ Temporary Items
 ### Gradle ###
 .gradle
 **/build/
-!src/**/build/
+!main_server/src/**/build/
 
 # Ignore Gradle GUI config
 gradle-app.setting

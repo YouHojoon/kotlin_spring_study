@@ -1,56 +1,44 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    id("org.springframework.boot") version "3.1.3"
+    id("org.springframework.boot") version "3.1.4"
     id("io.spring.dependency-management") version "1.1.3"
     kotlin("jvm") version "1.8.22"
     kotlin("plugin.spring") version "1.8.22"
     kotlin("plugin.jpa") version "1.8.22"
 }
+extra["springCloudVersion"] = "2022.0.4"
 
-group = "ac.kr.smu"
-version = "0.0.1-SNAPSHOT"
+allprojects{
+    group = "ac.kr.smu"
+    version = "0.0.1-SNAPSHOT"
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-}
+    apply(plugin = "org.jetbrains.kotlin.plugin.spring")
+    apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
+    apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.springframework.boot")
+    apply(plugin = "io.spring.dependency-management")
 
-repositories {
-    mavenCentral()
-}
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+    }
+    repositories {
+        mavenCentral()
+    }
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+            freeCompilerArgs += "-Xjsr305=strict"
+            jvmTarget = "17"
+        }
+    }
 
-dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    runtimeOnly("com.mysql:mysql-connector-j")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.security:spring-security-test")
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
 
-    compileOnly("io.jsonwebtoken:jjwt-api:0.11.5")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
-
-}
-
-allOpen{
-    annotation("ac.kr.smu.prlab_server.annotation.AllOpen")
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs += "-Xjsr305=strict"
-        jvmTarget = "17"
+    dependencies{
+        implementation("org.jetbrains.kotlin:kotlin-reflect")
+        implementation("org.springframework.boot:spring-boot-starter-web")
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
     }
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
