@@ -34,10 +34,13 @@ allprojects{
     tasks.withType<Test> {
         useJUnitPlatform()
     }
-
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+        }
+    }
     dependencies{
         implementation("org.jetbrains.kotlin:kotlin-reflect")
-        implementation("org.springframework.boot:spring-boot-starter-web")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
     }
 }
