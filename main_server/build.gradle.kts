@@ -1,9 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
-    }
-}
 allOpen{
     annotation("ac.kr.smu.prlab_server.annotation.AllOpen")
 }
@@ -18,7 +12,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
-
+    implementation("org.springframework.boot:spring-boot-starter-web")
     runtimeOnly("com.mysql:mysql-connector-j")
 
     compileOnly("io.jsonwebtoken:jjwt-api:0.11.5")
