@@ -3,10 +3,11 @@ package ac.kr.smu.prlab_server.service.impl
 import ac.kr.smu.prlab_server.domain.FaceMeasurementData
 import ac.kr.smu.prlab_server.domain.FingerMeasurementData
 import ac.kr.smu.prlab_server.domain.MeasurementData
-import ac.kr.smu.prlab_server.enum.Expression
-import ac.kr.smu.prlab_server.enum.MeasurementTarget
-import ac.kr.smu.prlab_server.enum.Metric
-import ac.kr.smu.prlab_server.enum.Period
+import ac.kr.smu.prlab_server.domain.User
+import ac.kr.smu.prlab_server.enums.Expression
+import ac.kr.smu.prlab_server.enums.MeasurementTarget
+import ac.kr.smu.prlab_server.enums.Metric
+import ac.kr.smu.prlab_server.enums.Period
 import ac.kr.smu.prlab_server.repository.MeasurementDataRepository
 import ac.kr.smu.prlab_server.service.MeasurementDataService
 import ac.kr.smu.prlab_server.util.*
@@ -24,28 +25,8 @@ import kotlin.jvm.optionals.getOrNull
 class MeasurementDataServiceImpl(
     private val repo: MeasurementDataRepository
 ): MeasurementDataService {
-    override fun findRecentData(): RecentData {
-        val pageable = PageRequest.of(0,1)
-
-        val faceMeasurementDataList = repo.findByTargetOrderByMeasurementDateDesc(MeasurementTarget.FACE, pageable).content
-        val fingerMeasurementDataList = repo.findByTargetOrderByMeasurementDateDesc(MeasurementTarget.FINGER, pageable).content
-
-        when{
-            faceMeasurementDataList.isEmpty() && fingerMeasurementDataList.isEmpty() -> return RecentData()
-            fingerMeasurementDataList.isEmpty() -> {
-                val data = faceMeasurementDataList.first() as FaceMeasurementData
-                return RecentData(data)
-            }
-            faceMeasurementDataList.isEmpty() -> {
-                val data = fingerMeasurementDataList.first() as FingerMeasurementData
-                return RecentData(data)
-            }
-            else -> {
-                val faceData = faceMeasurementDataList.first() as FaceMeasurementData
-                val fingerData = fingerMeasurementDataList.first() as FingerMeasurementData
-                return RecentData(faceData,fingerData)
-            }
-        }
+    override fun findRecentData(user: User): RecentData {
+        return repo.findRecentData(user)
     }
 
     override fun findById(id: Long): MeasurementData? {

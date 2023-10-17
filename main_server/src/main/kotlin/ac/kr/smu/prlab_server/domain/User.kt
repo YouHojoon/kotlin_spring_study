@@ -1,7 +1,7 @@
 package ac.kr.smu.prlab_server.domain
 
-import ac.kr.smu.prlab_server.enum.Gender
-import ac.kr.smu.prlab_server.enum.UserType
+import ac.kr.smu.prlab_server.enums.Gender
+import ac.kr.smu.prlab_server.enums.UserType
 import jakarta.persistence.*
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.AuthorityUtils

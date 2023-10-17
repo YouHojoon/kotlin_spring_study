@@ -1,6 +1,6 @@
 package ac.kr.smu.prlab_server.util
 
-import ac.kr.smu.prlab_server.enum.Expression
+import ac.kr.smu.prlab_server.enums.Expression
 
 class ExpressionMetricData{
     val neutral: Float
