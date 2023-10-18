@@ -18,7 +18,7 @@ import java.util.Date
 class MeasurementController(private val service: MeasurementDataService) {
     @GetMapping("recent")
     fun getRecentData(@AuthenticationPrincipal user: User): ResponseEntity<Any>{
-        return ResponseEntity.ok(service.findRecentData(user))
+        return ResponseEntity.ok(service.findRecentData(user.uid))
     }
 
     @GetMapping("{id}")
@@ -27,8 +27,8 @@ class MeasurementController(private val service: MeasurementDataService) {
         return ResponseEntity.ok(data)
     }
     @GetMapping("{metric}/{period}/{date}")
-    fun getMetricDatas(@PathVariable("metric") metric: Metric, @PathVariable("period") period: Period, @PathVariable("date") date: Date): ResponseEntity<Any>{
-        return ResponseEntity.ok(service.findMetricDatasByPeriodAndDate(metric,period,date))
+    fun getMetricDatas(@PathVariable("metric") metric: Metric, @PathVariable("period") period: Period, @PathVariable("date") date: Date, @AuthenticationPrincipal user: User): ResponseEntity<Any>{
+        return ResponseEntity.ok(service.findMetricDatasByPeriodAndDate(user.uid,metric,period,date))
     }
     @DeleteMapping("{id}")
     fun deleteMeasurementData(@PathVariable id: Long): ResponseEntity<Void>{
