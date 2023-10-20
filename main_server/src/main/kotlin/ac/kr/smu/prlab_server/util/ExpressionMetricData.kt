@@ -1,6 +1,6 @@
 package ac.kr.smu.prlab_server.util
 
-import ac.kr.smu.prlab_server.enum.Expression
+import ac.kr.smu.prlab_server.enums.Expression
 
 class ExpressionMetricData{
     val neutral: Float
@@ -22,7 +22,7 @@ class ExpressionMetricData{
     }
     constructor(map: Map<Expression, Int>){
         val size = map.values.sum()
-        val avg = map.map { it.key to ((it.value as Float) / size) }.toMap()
+        val avg = map.map { it.key to (it.value.toFloat() / size) }.toMap()
 
         this.neutral = avg[Expression.NEUTRAL] ?: 0f
         this.happy = avg[Expression.HAPPY] ?: 0f

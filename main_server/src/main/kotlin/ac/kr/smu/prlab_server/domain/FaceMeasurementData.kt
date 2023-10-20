@@ -1,7 +1,7 @@
 package ac.kr.smu.prlab_server.domain
 
-import ac.kr.smu.prlab_server.enum.Expression
-import ac.kr.smu.prlab_server.enum.MeasurementTarget
+import ac.kr.smu.prlab_server.enums.Expression
+import ac.kr.smu.prlab_server.enums.MeasurementTarget
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
