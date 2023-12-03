@@ -1,4 +1,5 @@
 # prlab_server
+![image](https://github.com/YouHojoon/prlab_server/assets/53998480/da45caf1-1a44-4ff8-b1b1-115476354555)
 
 ## 소개
 - 얼굴 혹은 손가락의 영상을 이용한 생체신호 추출 서비스
