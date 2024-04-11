@@ -1,8 +1,6 @@
 package ac.kr.smu.prlab_server.controller
 
-import ac.kr.smu.prlab_server.enums.UserType
 import ac.kr.smu.prlab_server.jwt.JWTTokenProvider
-import ac.kr.smu.prlab_server.service.IDTokenService
 import ac.kr.smu.prlab_server.service.OAuthService
 import ac.kr.smu.prlab_server.service.UserService
 import org.springframework.http.HttpStatus
@@ -22,24 +20,23 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 class LoginController(
     private val userService: UserService,
     private val OAuthService: OAuthService,
-    private val idTokenService: IDTokenService,
     private val tokenProvider: JWTTokenProvider,
     private val passwordEncoder: PasswordEncoder) {
     @PostMapping
-    fun postLogin(@RequestBody body: HashMap<String, String>): ResponseEntity<*>{
+    fun postLogin(@RequestBody body: HashMap<String, String>): ResponseEntity<Void>{
         val id = body["id"]
         val password = body["password"]
 
         if(id == null || password == null)
-            return ResponseEntity.badRequest().build<Void>()
+            return ResponseEntity.badRequest().build()
 
-        val user = userService.findById(id) ?: return  ResponseEntity.notFound().build<Void>()
+        val user = userService.findById(id) ?: return  ResponseEntity.notFound().build()
         
         if (passwordEncoder.matches(password, user.password)) {
             val token = tokenProvider.createToken(id)
-            return ResponseEntity.ok().body(mapOf("accessToken" to token))
+            return ResponseEntity.ok().header("AUTH-TOKEN", token).build()
         } else
-            return ResponseEntity<Void>(HttpStatus.CONFLICT)
+            return ResponseEntity(HttpStatus.CONFLICT)
     }
 
     @PostMapping("{SNS}")
@@ -50,10 +47,9 @@ class LoginController(
 
         return tokenResponseResult
             .fold(onSuccess = {
-                val socialUserNumber = idTokenService.parseSocialUserNumber(UserType.valueOf(SNS.uppercase()), it.idToken)
-                val user = userService.findById(socialUserNumber) ?: return@fold ResponseEntity.notFound().build()
-
-                ResponseEntity.ok(tokenProvider.createToken(user.id))
+                if (userService.findById(it.idToken) == null)
+                    ResponseEntity.notFound().build<Any>()
+                ResponseEntity.ok().header("AUTH-TOKEN",tokenProvider.createToken(it.idToken)).build<Any>()
             }){
                 when(it){
                     is WebClientResponseException -> {
