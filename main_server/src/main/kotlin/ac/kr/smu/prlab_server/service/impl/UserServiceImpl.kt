@@ -29,7 +29,7 @@ class UserServiceImpl(
     }
 
     override fun isIdExist(id: String): Boolean {
-        return findById(id) == null
+        return findById(id) != null
     }
 
     override fun findById(id: String): User? {
