@@ -4,11 +4,14 @@ import ac.kr.smu.prlab_server.enums.Expression
 import ac.kr.smu.prlab_server.enums.MeasurementTarget
 import com.fasterxml.jackson.annotation.JsonGetter
 import jakarta.persistence.*
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import java.time.LocalDateTime
 
 @Entity
 @PrimaryKeyJoinColumn(name="id")
 @DiscriminatorValue("FACE")
+@OnDelete(action = OnDeleteAction.CASCADE)
 class FaceMeasurementData(
     bpm: Int,
     SpO2: Int,

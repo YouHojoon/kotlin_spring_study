@@ -6,11 +6,14 @@ import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
 import jakarta.persistence.PrimaryKeyJoinColumn
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import java.time.LocalDateTime
 
 @Entity
 @PrimaryKeyJoinColumn(name="id")
 @DiscriminatorValue("FINGER")
+@OnDelete(action = OnDeleteAction.CASCADE)
 class FingerMeasurementData(
     bpm: Int,
     SpO2: Int,

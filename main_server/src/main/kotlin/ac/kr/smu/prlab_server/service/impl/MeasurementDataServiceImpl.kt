@@ -14,6 +14,7 @@ import ac.kr.smu.prlab_server.service.MeasurementDataService
 import ac.kr.smu.prlab_server.util.*
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
@@ -26,27 +27,31 @@ import kotlin.jvm.optionals.getOrNull
 class MeasurementDataServiceImpl(
     private val repo: MeasurementDataRepository
 ): MeasurementDataService {
+
+    @Transactional(readOnly = true)
     override fun findRecentData(userId:Long): RecentData {
         return repo.findRecentData(userId)
     }
 
+    @Transactional(readOnly = true)
     override fun findById(userId: Long, id: Long): MeasurementData? {
         val data = repo.findById(id).getOrNull() ?: return null
         if(data.user.uid != userId)
             throw MeasurementDataPermissionException()
         return data
     }
-
+//    @Transactional(readOnly = true)
     override fun deleteById(userID: Long, id: Long) {
         val data = repo.findById(id).getOrNull()
 
         checkNotNull(data){"데이터가 존재하지 않습니다."}
+
         if (data.user.uid != userID)
             throw MeasurementDataPermissionException()
 
         repo.deleteById(id)
     }
-
+    @Transactional(readOnly = true)
     override fun findMetricDatasByPeriodAndDate(userId:Long, metric: Metric, period: Period, date: Date): List<MetricData> {
         return repo
             .findMetricDatasByPeriodAndDate(userId,metric,period,date)
