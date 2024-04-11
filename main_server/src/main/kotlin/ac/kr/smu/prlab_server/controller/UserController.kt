@@ -2,13 +2,17 @@ package ac.kr.smu.prlab_server.controller
 
 import ac.kr.smu.prlab_server.domain.User
 import ac.kr.smu.prlab_server.jwt.JWTTokenProvider
+import ac.kr.smu.prlab_server.service.IDTokenService
 import ac.kr.smu.prlab_server.service.OAuthService
 import ac.kr.smu.prlab_server.service.UserService
 import com.nimbusds.jose.shaded.gson.Gson
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
@@ -21,6 +25,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 @RestController
 class UserController(
     private val service: UserService,
+    private val idTokenService: IDTokenService,
     private val OAuthService: OAuthService,
     private val tokenProvider: JWTTokenProvider
 ) {
@@ -58,7 +63,7 @@ class UserController(
         val oauthResult = OAuthService.oauth(user.type.name.lowercase(), code)
 
         return oauthResult.fold({
-            val id = it.idToken
+            val id = idTokenService.parseSocialUserNumber(user.type, it.idToken)
             val user = User(id, user.password,user.email,user.birthday,user.gender, user.type)
 
             saveUser(user)
@@ -82,16 +87,16 @@ class UserController(
         }
     }
 
-    @GetMapping(params = ["id"])
-    fun getIsIdExistById(@RequestParam("id") id: String): ResponseEntity<Void> {
+    @GetMapping("check-duplication")
+    fun checkDuplication(@RequestParam("id") id: String): ResponseEntity<Void> {
         when {
             service.isIdExist(id) -> return ResponseEntity.noContent().build()
             else -> return ResponseEntity.notFound().build()
         }
     }
 
-    @GetMapping(params = ["id", "email"])
-    fun getIsMatchIdAndEmail(
+    @GetMapping("check-email")
+    fun checkEmail(
         @RequestParam("id") id: String,
         @RequestParam("email") email: String
     ): ResponseEntity<Any> {
@@ -107,9 +112,9 @@ class UserController(
     @PatchMapping
     fun patchUserPassword(
         @RequestBody json: HashMap<String, String>,
-        @RequestHeader("AUTH-TOKEN") token: String
+        @AuthenticationPrincipal user: User
     ): ResponseEntity<Void> {
-        val id = tokenProvider.getId(token)
+        val id = user.id
         val password = json["password"]
 
         when {
@@ -119,5 +124,12 @@ class UserController(
                 return ResponseEntity.noContent().build()
             }
         }
+    }
+
+    @DeleteMapping
+    fun deleteUser(@AuthenticationPrincipal user: User): ResponseEntity<Void>{
+        service.deleteUser(user.id)
+
+        return ResponseEntity.noContent().build()
     }
 }
