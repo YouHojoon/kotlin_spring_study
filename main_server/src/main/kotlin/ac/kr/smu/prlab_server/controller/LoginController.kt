@@ -43,15 +43,15 @@ class LoginController(
     }
 
     @PostMapping("{SNS}")
-    suspend fun postSNSLogin(@RequestBody body: HashMap<String, String>, @PathVariable SNS: String): ResponseEntity<Any>{
-        val code = body["code"] ?: return ResponseEntity.badRequest().build()
+    suspend fun postSNSLogin(@RequestBody body: HashMap<String, String>, @PathVariable SNS: String): ResponseEntity<*>{
+        val code = body["code"] ?: return ResponseEntity.badRequest().build<Void>()
 
         val tokenResponseResult = OAuthService.oauth(SNS,code)
 
         return tokenResponseResult
             .fold(onSuccess = {
                 val socialUserNumber = idTokenService.parseSocialUserNumber(UserType.valueOf(SNS.uppercase()), it.idToken)
-                val user = userService.findById(socialUserNumber) ?: return@fold ResponseEntity.notFound().build()
+                val user = userService.findById(socialUserNumber) ?: return@fold ResponseEntity(mapOf("socialUserNumber" to socialUserNumber), HttpStatus.NOT_FOUND)
 
                 ResponseEntity.ok(tokenProvider.createToken(user.id))
             }){
@@ -59,7 +59,7 @@ class LoginController(
                     is WebClientResponseException -> {
                         ResponseEntity<Any>(it.getResponseBodyAs(Map::class.java), it.statusCode)
                     }
-                    else -> ResponseEntity.internalServerError().build<Any>()
+                    else -> ResponseEntity.internalServerError().build<Void>()
                 }
             }
     }
