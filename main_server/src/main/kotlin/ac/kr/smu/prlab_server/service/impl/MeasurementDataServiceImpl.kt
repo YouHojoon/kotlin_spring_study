@@ -8,6 +8,7 @@ import ac.kr.smu.prlab_server.enums.Expression
 import ac.kr.smu.prlab_server.enums.MeasurementTarget
 import ac.kr.smu.prlab_server.enums.Metric
 import ac.kr.smu.prlab_server.enums.Period
+import ac.kr.smu.prlab_server.exception.MeasurementDataPermissionException
 import ac.kr.smu.prlab_server.repository.MeasurementDataRepository
 import ac.kr.smu.prlab_server.service.MeasurementDataService
 import ac.kr.smu.prlab_server.util.*
@@ -29,11 +30,20 @@ class MeasurementDataServiceImpl(
         return repo.findRecentData(userId)
     }
 
-    override fun findById(id: Long): MeasurementData? {
-        return repo.findById(id).getOrNull()
+    override fun findById(userId: Long, id: Long): MeasurementData? {
+        val data = repo.findById(id).getOrNull() ?: return null
+        if(data.user.uid != userId)
+            throw MeasurementDataPermissionException()
+        return data
     }
 
-    override fun deleteById(id: Long) {
+    override fun deleteById(userID: Long, id: Long) {
+        val data = repo.findById(id).getOrNull()
+
+        checkNotNull(data){"데이터가 존재하지 않습니다."}
+        if (data.user.uid != userID)
+            throw MeasurementDataPermissionException()
+
         repo.deleteById(id)
     }
 

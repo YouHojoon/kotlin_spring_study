@@ -2,6 +2,7 @@ package ac.kr.smu.prlab_server.domain
 
 import ac.kr.smu.prlab_server.enums.Expression
 import ac.kr.smu.prlab_server.enums.MeasurementTarget
+import com.fasterxml.jackson.annotation.JsonGetter
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -17,6 +18,7 @@ class FaceMeasurementData(
     confidence:Float,
     user: User,
 
+    @get:JsonGetter("BMI")
     @Column(updatable = false, nullable = false)
     val BMI : Int,
 

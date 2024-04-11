@@ -1,6 +1,7 @@
 package ac.kr.smu.prlab_server.domain
 
 import ac.kr.smu.prlab_server.enums.MeasurementTarget
+import com.fasterxml.jackson.annotation.JsonGetter
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
@@ -18,9 +19,12 @@ class FingerMeasurementData(
     measurementDate: LocalDateTime,
     confidence: Float,
     user: User,
+
+    @get:JsonGetter("SYS")
     @Column(updatable = false, nullable = false)
     val SYS: Int,
 
+    @get:JsonGetter("DIA")
     @Column(updatable = false, nullable = false)
     val DIA: Int,
 
