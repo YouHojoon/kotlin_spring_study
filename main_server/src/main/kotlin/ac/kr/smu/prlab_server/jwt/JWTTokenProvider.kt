@@ -30,7 +30,7 @@ class JWTTokenProvider(
                 , SignatureAlgorithm.HS256.jcaName)
         }
     companion object{
-        private const val HEADER_KEY = "AUTH-TOKEN"
+        private const val HEADER_KEY = "Auth-Token"
     }
 
     fun createToken(id: String, validTime: Long = 1000L * 60 * 60): String{
