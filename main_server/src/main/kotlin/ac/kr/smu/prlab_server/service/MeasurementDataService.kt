@@ -9,8 +9,8 @@ import ac.kr.smu.prlab_server.util.RecentData
 import java.util.Date
 
 interface MeasurementDataService {
-    fun findById(id: Long): MeasurementData?
+    fun findById(userID: Long, id: Long): MeasurementData?
     fun findRecentData(userId:Long): RecentData
-    fun deleteById(id: Long)
+    fun deleteById(userId: Long, id: Long)
     fun findMetricDatasByPeriodAndDate(userId:Long, metric:Metric, period: Period, date: Date): List<MetricData>
 }
