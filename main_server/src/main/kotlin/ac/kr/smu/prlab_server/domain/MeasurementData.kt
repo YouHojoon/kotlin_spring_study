@@ -2,8 +2,12 @@ package ac.kr.smu.prlab_server.domain
 
 import ac.kr.smu.prlab_server.annotation.AllOpen
 import ac.kr.smu.prlab_server.enums.MeasurementTarget
+import com.fasterxml.jackson.annotation.JsonGetter
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 import jakarta.persistence.*
+import org.hibernate.annotations.Cascade
+import org.hibernate.annotations.Fetch
 import java.time.LocalDateTime
 
 @Entity
@@ -14,9 +18,11 @@ abstract class MeasurementData(
     @Column(updatable = false, nullable = false)
     val bpm: Int,
 
+    @get:JsonGetter("SpO2")
     @Column(updatable = false, nullable = false)
     val SpO2: Int,
 
+    @get:JsonGetter("RR")
     @Column(updatable = false, nullable = false)
     val RR: Int,
 
@@ -34,11 +40,13 @@ abstract class MeasurementData(
     val target: MeasurementTarget,
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private val user: User,
+    val user: User,
 
     @Id
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private val id: Long = 0L
 ) {
