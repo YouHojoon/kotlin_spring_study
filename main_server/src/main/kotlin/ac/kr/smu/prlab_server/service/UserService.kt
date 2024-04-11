@@ -8,4 +8,6 @@ interface UserService {
     fun findIdByEmail(email: String): String?
     fun isIdExist(id: String): Boolean
     fun findById(id: String): User?
+
+    fun deleteUser(id: String)
 }
