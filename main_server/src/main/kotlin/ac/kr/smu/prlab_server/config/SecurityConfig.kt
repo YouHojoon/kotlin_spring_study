@@ -47,8 +47,8 @@ class SecurityConfig(
                 authorize("/oauth/**",permitAll)
                 authorize("/login/**",permitAll)
                 authorize(HttpMethod.POST, "/users",permitAll)// 회원가입
-                authorize(RequestMatcher { request -> request.requestURI == "/users" && request.getParameter("id") != null}, permitAll)
-                authorize(RequestMatcher { request -> request.requestURI == "/users" && request.getParameter("email") != null}, permitAll)
+                authorize("/users/check-**", permitAll)
+
                 authorize(anyRequest, authenticated)
             }
             addFilterBefore<UsernamePasswordAuthenticationFilter>(JWTAuthenticationFilter(tokenProvider))

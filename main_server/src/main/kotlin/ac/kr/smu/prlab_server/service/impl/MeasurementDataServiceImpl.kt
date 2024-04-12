@@ -36,17 +36,17 @@ class MeasurementDataServiceImpl(
     @Transactional(readOnly = true)
     override fun findById(userId: Long, id: Long): MeasurementData? {
         val data = repo.findById(id).getOrNull() ?: return null
-        if(data.user.uid != userId)
+        if(data.user.userID != userId)
             throw MeasurementDataPermissionException()
         return data
     }
-//    @Transactional(readOnly = true)
+    @Transactional
     override fun deleteById(userID: Long, id: Long) {
         val data = repo.findById(id).getOrNull()
 
         checkNotNull(data){"데이터가 존재하지 않습니다."}
 
-        if (data.user.uid != userID)
+        if (data.user.userID != userID)
             throw MeasurementDataPermissionException()
 
         repo.deleteById(id)
