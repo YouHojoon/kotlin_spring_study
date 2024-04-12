@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import org.hibernate.annotations.Cascade
 import org.hibernate.annotations.Fetch
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import java.time.LocalDateTime
 
 @Entity
@@ -43,6 +45,7 @@ abstract class MeasurementData(
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     val user: User,
 
     @Id
