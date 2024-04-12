@@ -36,8 +36,7 @@ class UserServiceImpl(
     override fun findById(id: String): User? {
         return repo.findById(id).getOrNull()
     }
-
-    @Transactional(readOnly = true)
+    @Transactional
     override fun deleteUser(id:String){
         repo.deleteUserById(id)
     }
