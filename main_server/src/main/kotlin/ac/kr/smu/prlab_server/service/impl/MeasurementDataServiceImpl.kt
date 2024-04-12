@@ -40,7 +40,7 @@ class MeasurementDataServiceImpl(
             throw MeasurementDataPermissionException()
         return data
     }
-//    @Transactional(readOnly = true)
+    @Transactional
     override fun deleteById(userID: Long, id: Long) {
         val data = repo.findById(id).getOrNull()
 
