@@ -23,17 +23,17 @@ import java.util.*
 class MeasurementDataSupportImpl(
     private val queryFactory: JPAQueryFactory
 ): MeasurementDataSupport {
-    override fun findRecentData(userId:Long): RecentData {
+    override fun findRecentData(userID:Long): RecentData {
         val fingerMeasurementData = queryFactory
             .selectFrom(fingerMeasurementData)
-            .where(fingerMeasurementData.user.uid.eq(userId))
+            .where(fingerMeasurementData.user.userID.eq(userID))
             .orderBy(fingerMeasurementData.measurementDate.desc())
             .limit(1)
             .fetchOne()
 
         val faceMeasurementData = queryFactory
             .selectFrom(faceMeasurementData)
-            .where(faceMeasurementData.user.uid.eq(userId))
+            .where(faceMeasurementData.user.userID.eq(userID))
             .orderBy(faceMeasurementData.measurementDate.desc())
             .limit(1)
             .fetchOne()
@@ -45,11 +45,11 @@ class MeasurementDataSupportImpl(
             else -> return RecentData(faceMeasurementData!!, fingerMeasurementData!!)
         }
     }
-    override fun findMetricDatasByPeriodAndDate(userId:Long, metric: Metric, period: Period, date: Date): List<MetricData> {
+    override fun findMetricDatasByPeriodAndDate(userID:Long, metric: Metric, period: Period, date: Date): List<MetricData> {
         val baseQuery = findMetricDatasOfBaseQuery(metric)
         val (startDateTime, endDateTime) = calcStartAndEndDateTime(period,date)
         return baseQuery
-            .where(measurementData.user.uid.eq(userId), measurementData.measurementDate.between(startDateTime, endDateTime))
+            .where(measurementData.user.userID.eq(userID), measurementData.measurementDate.between(startDateTime, endDateTime))
             .fetch()
             .groupBy {
                 val measurementDate = it.get(measurementData.measurementDate)!!
