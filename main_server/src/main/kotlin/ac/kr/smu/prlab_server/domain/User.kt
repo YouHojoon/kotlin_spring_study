@@ -10,13 +10,29 @@ import java.util.Date
 
 @Entity
 class User(
-    @Column(length = 900, updatable = false) val id: String = "default",
-    @Column @JvmField var password: String = "default",
-    @Column(updatable = false) val email: String,
-    @Column(updatable = false) val birthday: Date,
-    @Enumerated(EnumType.STRING) @Column(updatable = false) val gender: Gender,
-    @Enumerated(EnumType.STRING) @Column(updatable = false) val type: UserType,
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) val uid: Long = 0
+    @Column(length = 900, updatable = false, nullable = false)
+    val id: String = "default",
+
+    @Column(nullable = false)
+    @JvmField
+    var password: String = "default",
+
+    @Column(updatable = false, nullable = false)
+    val email: String,
+    @Column(updatable = false, nullable = false)
+    val birthday: Date,
+
+    @Enumerated(EnumType.STRING)
+    @Column(updatable = false, nullable = false)
+    val gender: Gender,
+
+    @Enumerated(EnumType.STRING)
+    @Column(updatable = false, nullable = false)
+    val type: UserType,
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id", insertable = false, updatable = false, nullable = false)
+    val userID: Long = 0
 ): UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return AuthorityUtils.createAuthorityList()

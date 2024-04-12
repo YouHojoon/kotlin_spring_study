@@ -23,13 +23,13 @@ class MeasurementController(
 ) {
     @GetMapping("recent")
     fun getRecentData(@AuthenticationPrincipal user: User): ResponseEntity<Any>{
-        return ResponseEntity.ok(service.findRecentData(user.uid))
+        return ResponseEntity.ok(service.findRecentData(user.userID))
     }
 
     @GetMapping("{id}")
     fun getMeasurementData(@AuthenticationPrincipal user: User, @PathVariable id: Long): ResponseEntity<Any>{
         try {
-            val data = service.findById(user.uid, id) ?: return ResponseEntity.notFound().build()
+            val data = service.findById(user.userID, id) ?: return ResponseEntity.notFound().build()
             return ResponseEntity.ok(data)
         }catch (e: MeasurementDataPermissionException) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
@@ -37,12 +37,12 @@ class MeasurementController(
     }
     @GetMapping("{metric}/{period}/{date}")
     fun getMetricDatas(@PathVariable("metric") metric: Metric, @PathVariable("period") period: Period, @PathVariable("date") date: Date, @AuthenticationPrincipal user: User): ResponseEntity<Any>{
-        return ResponseEntity.ok(service.findMetricDatasByPeriodAndDate(user.uid,metric,period,date))
+        return ResponseEntity.ok(service.findMetricDatasByPeriodAndDate(user.userID,metric,period,date))
     }
     @DeleteMapping("{id}")
     fun deleteMeasurementData(@AuthenticationPrincipal user: User, @PathVariable id: Long): ResponseEntity<Void>{
         try {
-            service.deleteById(user.uid, id)
+            service.deleteById(user.userID, id)
         }catch (e: IllegalStateException){
             return ResponseEntity.notFound().build()
         }

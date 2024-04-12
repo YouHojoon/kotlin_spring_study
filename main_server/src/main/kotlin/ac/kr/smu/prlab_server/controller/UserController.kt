@@ -25,32 +25,18 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 @RestController
 class UserController(
     private val service: UserService,
-    private val idTokenService: IDTokenService,
-    private val OAuthService: OAuthService,
     private val tokenProvider: JWTTokenProvider
 ) {
     @PostMapping
-    fun postUser(@RequestBody body: HashMap<String, Any>): ResponseEntity<Any> {
-        val user = Gson().fromJson(
-            if (body.containsKey("user"))
-                body["user"].toString()
-            else
-                body.toString(), User::class.java
-        )
-
-        val code = body["code"]
-
-        if (code == null)
-            return saveUser(user)
-        else
-            return saveSNSUser(user, code.toString())
+    fun postUser(@RequestBody user: User): ResponseEntity<Any> {
+        return saveUser(user)
     }
 
     private fun saveUser(user: User): ResponseEntity<Any> {
-        val email = service.findIdByEmail(user.email)
+        val id = service.findIdByEmail(user.email)
 
         when {
-            email == null -> {
+            id == null -> {
                 service.save(user)
                 return ResponseEntity(HttpStatus.CREATED)
             }
@@ -58,25 +44,6 @@ class UserController(
             else -> return ResponseEntity(HttpStatus.CONFLICT)
         }
     }
-
-    private  fun saveSNSUser(user: User, code: String): ResponseEntity<Any> {
-        val oauthResult = OAuthService.oauth(user.type.name.lowercase(), code)
-
-        return oauthResult.fold({
-            val id = idTokenService.parseSocialUserNumber(user.type, it.idToken)
-            val user = User(id, user.password,user.email,user.birthday,user.gender, user.type)
-
-            saveUser(user)
-        }){
-            when(it){
-                is WebClientResponseException -> {
-                    ResponseEntity<Any>(it.getResponseBodyAs(Map::class.java), it.statusCode)
-                }
-                else -> ResponseEntity.internalServerError().build<Any>()
-            }
-        }
-    }
-
     @GetMapping(params = ["email"])
     fun getUserByEmail(@RequestParam("email") email: String): ResponseEntity<Any> {
         val id = service.findIdByEmail(email)
